@@ -1,55 +1,60 @@
-import os
-import cv2
-import torch
-import numpy as np
-from torch.utils.data import Dataset
+# Video Action Recognition using CNN3D + BiLSTM
 
-class VideoDataset(Dataset):
-    def __init__(self, root_dir, frames_per_video=16):
-        self.root_dir = root_dir
-        self.frames_per_video = frames_per_video
-        self.classes = sorted(os.listdir(root_dir))
-        self.samples = []
+## Overview
+This project performs human action recognition from videos using Deep Learning.
 
-        for label, cls in enumerate(self.classes):
-            cls_path = os.path.join(root_dir, cls)
-            for video in os.listdir(cls_path):
-                self.samples.append(
-                    (os.path.join(cls_path, video), label)
-                )
+The model combines:
+- 3D Convolutional Neural Network (CNN3D)
+- Bidirectional LSTM
+- Temporal Attention Mechanism
 
-    def __len__(self):
-        return len(self.samples)
+## Features
+- Video action classification
+- Live surveillance prediction
+- Training and testing pipeline
+- Accuracy visualization graphs
 
-    def extract_frames(self, video_path):
-        cap = cv2.VideoCapture(video_path)
-        frames = []
+## Technologies Used
+- Python
+- PyTorch
+- OpenCV
+- NumPy
 
-        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        step = max(total_frames // self.frames_per_video, 1)
+## Project Structure
 
-        for i in range(self.frames_per_video):
-            cap.set(cv2.CAP_PROP_POS_FRAMES, i * step)
-            ret, frame = cap.read()
-            if not ret:
-                break
+video_action_recognition/
+│
+├── src/
+│   ├── train.py
+│   ├── predict.py
+│   ├── model.py
+│   ├── dataset.py
+│   └── live_surveillance.py
+│
+├── requirements.txt
+├── README.md
+└── .gitignore
 
-            frame = cv2.resize(frame, (112, 112))
-            frame = frame / 255.0
-            frames.append(frame)
+## Installation
 
-        cap.release()
+```bash
+pip install -r requirements.txt
+```
 
-        while len(frames) < self.frames_per_video:
-            frames.append(frames[-1])
+## Run Training
 
-        frames = np.array(frames)
-        frames = torch.tensor(frames, dtype=torch.float32)
-        frames = frames.permute(3, 0, 1, 2)  # (C, T, H, W)
+```bash
+python src/train.py
+```
 
-        return frames
+## Run Prediction
 
-    def __getitem__(self, idx):
-        video_path, label = self.samples[idx]
-        frames = self.extract_frames(video_path)
-        return frames, label
+```bash
+python src/predict.py
+```
+
+## Model Architecture
+CNN3D + BiLSTM + Temporal Attention
+
+## Author
+SM TIDKE
