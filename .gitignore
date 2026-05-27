@@ -1,0 +1,7 @@
+torch_gpu/
+data/
+__pycache__/
+*.pth
+*.pt
+*.pyc
+.vscode/
